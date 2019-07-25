@@ -6,7 +6,8 @@
     imports             =   [ ./hardware-configuration.nix ];
     hardware            =   {
         opengl.driSupport32Bit  = true;
-        pulseaudio.support32Bit = true;
+        #pulseaudio.support32Bit = true;
+	pulseaudio.enable 	= true;
         bluetooth.enable        = true; };
     boot                =   {
         kernelPackages      = pkgs.linuxPackages_latest;
@@ -29,8 +30,7 @@
     time.timeZone       =   "Asia/Tokyo";
     networking          =   {
         hostName            = "ghasshee";
-        networkmanager      = {
-            enable              = true;};
+        networkmanager      = { enable = true; };
         nameservers         = [ "8.8.8.8" "8.8.4.4" ];
         firewall            = {
             enable              = false;
@@ -88,7 +88,7 @@
 
                 sys             = [
 
-                    acpi zsh vim bvi tmux w3m git curl wget gnused xsel
+                    acpi zsh vim bvi tmux w3m git curl wget gnused xsel pavucontrol
                     tree less jq mlocate unzip xz sl lolcat figlet man-db manpages sdcv bc 
                     openssl.dev openssh gnupg sshfs stunnel         ## Security                 
                     networkmanager iptables nettools irssi tcpdump  ## Network 
@@ -141,6 +141,7 @@
             longitude           = "135";    };
         openssh.enable      = true;
         xserver             = {
+#	    videoDrivers	= [ "nvidia" ];
             enable              = true;
             layout              = "us";
             xkbOptions          = "eurosign:e";
@@ -152,17 +153,23 @@
 #           desktopManager.kde4.enable = true;
             synaptics           = {
                 enable              = true;
+		maxSpeed	    = "1.5";
+		minSpeed            = "0.5"; 
 #               tapButtons          = true;
                 twoFingerScroll     = true;
                 horizontalScroll    = true;
                 vertEdgeScroll      = false;
-                accelFactor         = "0.015";
+                accelFactor         = "0.100";
                 buttonsMap          = [1 3 2];
                 fingersMap          = [1 3 2];
+		scrollDelta         = -75;
                 additionalOptions   = ''
                     Option "VertScrollDelta" "50"
                     Option "HorizScrollDelta" "-20"
-                ''; };};
+                ''; };
+	    multitouch		= {
+		enable 			= false; 
+		invertScroll		= true; };};
         printing            = {
             enable              = true; # enable CUPS Printing 
             drivers             = with pkgs; [ gutenprint hplipWithPlugin cups-bjnp cups-dymo ];};
@@ -181,10 +188,11 @@
             ghasshee            = {
 	            isNormalUser        = true;
 	            home                = "/home/ghasshee";
-	            extraGroups         = ["wheel" "networkmanager" "adbusers"];
+	            extraGroups         = ["wheel" "networkmanager" "adbusers" "audio"];
       	        shell               = "/run/current-system/sw/bin/zsh";
                 uid                 = 1000;     };};
     };
+    sound.enable        = true;
     system.stateVersion = "19.03";
 }
 
