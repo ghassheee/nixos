@@ -1,190 +1,294 @@
-# HELP          =>  $ man configuration.nix  
-# SEARCH PKGs   =>  $ nix-env -qaP | grep wget
+# Edit this configuration file to define what should be installed on
+# your system.  Help is available in the configuration.nix(5) man page
+# and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, ... }:
+
 {
-    imports             =   [ ./hardware-configuration.nix ];
-    hardware            =   {
+    imports =
+        [ # Include the results of the hardware scan.
+        ./hardware-configuration.nix
+        ];
+
+    hardware = {
+	pulseaudio.enable 	= true;
         opengl.driSupport32Bit  = true;
         pulseaudio.support32Bit = true;
-        bluetooth.enable        = true; };
-    boot                =   {
-        kernelPackages      = pkgs.linuxPackages_latest;
-        consoleLogLevel     = 5 ;
-        kernelParams        = ["resume=/dev/nvme0n1p2" ];
-        blacklistedKernelModules = ["nouveau"];
-        initrd              = {
-            checkJournalingFS   = false;   
-            luks.devices        = [{
-                name                = "root";
-                device              = "/dev/nvme0n1p2";
-                preLVM              = true;  }]; };
-        loader              = {
-            grub                = {
-                enable              = true;
-                device              = "/dev/nvme0n1";
-                extraConfig         = "GRUB_CMDLINE_LINUX_DEFAULT=\"resume=/dev/nvme0n1p2\""; 
-                };};
+        bluetooth.enable        = true;
     };
-    time.timeZone       =   "Asia/Tokyo";
-    networking          =   {
-        hostName            = "ghasshee";
-        networkmanager      = {
-            enable              = true;};
-        nameservers         = [ "8.8.8.8" "8.8.4.4" ];
-        firewall            = {
-            enable              = false;
-            allowPing           = true;
-            allowedTCPPorts     = [ 8080 ];
-            allowedUDPPorts     = [ ]; };
-    };
-    i18n                =   {
-        consoleFont         = "Lat2-Terminus16";
-        consoleKeyMap       = "us";
-        defaultLocale       = "en_US.UTF-8";
-        inputMethod         = {
-            enabled             = "ibus";
-            ibus.engines        = with pkgs.ibus-engines; [ anthy m17n ]; };
-    };
-    nix                 =   {
-        binaryCaches        = [http://cache.nixos.org];
-        package            = pkgs.nix1;  ## this updates to 19.03
-    };
-    nixpkgs.config      = {
-        allowUnfree         = true;
-        allowBroken         = true;
-        firefox.icedtea     = true;
+    sound.enable = true;
+    boot = {
+        kernelPackages = pkgs.linuxPackages_latest;
+        initrd.luks.devices = [
+            {
+                name = "root";
+                device = "/dev/sda2";
+                preLVM = true;
+            }];
+        loader = {
+            grub = {
+                enable = true;
+                device = "/dev/sda";
+                extraConfig = 
+                "GRUB_CMDLINE_LINUX_DEFAULT=\"resume=/dev/sda2\"";
+#               efiSupport = true;
+#               forceInstall = true;
+            };
+#           systemd-boot.enable = true;     # Formerly  gummiboot.enable
+#           efi.canTouchEfiVariables = true;
+        };
+        consoleLogLevel = 5;
+        kernelParams = [ "resume=/dev/sda2" ];
+        #blacklistedKernelModules = ["nouveau"];
+        initrd.checkJournalingFS = false;
     };
 
-    environment         =   {
-#       promptInit = "";
-#       interactiveShellInit = ""; 
-        etc."fuse.conf".text = ''user_allow_other'';
-        systemPackages = with pkgs; 
-            let 
-                patched-ghc     = haskellPackages.override (old:{
-                        overrides = self: super: {
-                            Euterpea    = self.callHackage "Euterpea" "2.0.6" {};
-                            PortMidi    = self.callHackage "PortMidi" "0.1.6.1" {};
-                            heap        = pkgs.haskell.lib.dontCheck super.heap;
-                            };});
-                py              = [
-                    python27Full python27Packages.pygments pypyPackages.virtualenv
-                    (python36.withPackages (x: with x; [
-                        python pip numpy scipy networkx matplotlib toolz pytest 
-                        ipython jupyter virtualenvwrapper tkinter #tk
-                        ]))];
-                hs              = [ 
-                    (patched-ghc.ghcWithPackages (p: with p; [
-                        cabal-install hoogle hakyll effect-monad hmatrix megaparsec
-                        gnuplot GLUT Euterpea
-                        # algebra 
-                        base58-bytestring vector-sized mwc-random 
-                        cryptonite secp256k1-haskell # secp256k1 
-                        ]))];
-                ml              = with ocamlPackages; [
-                    ocaml opam labltk
-                    utop camlp4 findlib batteries ]; 
+    networking = {
+        hostName    = "ghasshee";
+        networkmanager.enable = true;
+        nameservers = [ "8.8.8.8" "8.8.4.4" ];
+        firewall = {
+            allowPing = true;
+#           allowedTCPPorts = [ 8080 ];
+#           allowedUDPPorts = [ ... ];
+#           enable = false;
+        };
+    };
 
-                sys             = [
-
-                    acpi zsh vim bvi tmux w3m git curl wget gnused xsel rename 
-                    tree less jq mlocate unzip xz sl lolcat figlet man-db manpages sdcv bc 
-                    openssl.dev openssh gnupg sshfs stunnel         ## Security                 
-                    networkmanager iptables nettools irssi tcpdump  ## Network 
-                
-                # Process / Memory 
-                    at                                      # scheduled process execution
-                    lsof psutils htop fzf 
-                    psmisc                                  # killall, pstree, ..etc
-                    config.boot.kernelPackages.perf         ## linuxPackages.perf 
-                
-                # X 
-                    xorg.xlibsWrapper xlibs.xmodmap acpilight xterm tty-clock xcalib tk tcl          
-                    numix-icon-theme-circle numix-gtk-theme
-                    freeglut  ## For GLUT GPU culculation 
-                
-                # Music/Video
-                    pulseaudioLight ## pulseaudioFull     
-                    dvdplusrwtools dvdauthor
-                    espeak ffmpeg mplayer sox timidity 
-                    gnome3.totem vlc    # kde4.dragon kde4.kmix 
-                
-                # Applications
-                    chromium firefoxWrapper thunderbird kdeApplications.okular mupdf evince vivaldi
-                    sage            # Mathematica Alternative 
-                    android-file-transfer
-                    dropbox-cli xorg.libxshmfence atom djvu2pdf qrencode vokoscreen docker gimp youtube-dl
-                    maim            # command-line screenshot
-                    gnome3.eog      # image viewer
-                    tesseract       # OCR
-                    timidity        # MIDI
-                    minecraft       # Game
-                
-                # Languages  
-                    stdenv  binutils.bintools makeWrapper cmake automake autoconf glibc gdb 
-                    binutils gcc gnumake openssl pkgconfig rlwrap
-                    nodejs ruby jekyll              ## Ruby / Nodejs
-                    idris vimPlugins.idris-vim      ## Idris
-                    coq coqPackages_8_6.ssreflect   ## Coq
-                    rustup cargo                    ## RUST 
-        
-            ]; in sys ++ hs ++ py ++ ml ;
+    i18n = {
+        consoleFont = "Lat2-Terminus16";
+        consoleKeyMap = "us";
+        defaultLocale = "en_US.UTF-8";
+        inputMethod = {
+            enabled = "ibus";
+            ibus.engines = with pkgs.ibus-engines; [ anthy m17n ];
+            };
     };
     
+    time.timeZone = "Asia/Tokyo";
+    
+    nix.binaryCaches = [http://cache.nixos.org];
+    nixpkgs.config = {
+        allowUnfree = true;
+        allowBroken = true;
+        firefox.icedtea = true;
+    };
 
-    services            = {
-        acpid.enable        = true;
-        redshift            = {
-            enable              = true;
-            latitude            = "40";
-            longitude           = "135";    };
-        openssh.enable      = true;
-        xserver             = {
-            enable              = true;
-            layout              = "us";
-            xkbOptions          = "eurosign:e";
-            displayManager.slim = {
-                enable              = true;
-                defaultUser         = "ghasshee";
-                autoLogin           = true;     };
+    environment.etc."fuse.conf".text = ''
+        user_allow_other
+    '';
+        
+    # List packages installed in system profile. To search by name, run
+    # $ nix-env -qaP | grep wget
+    environment.systemPackages = 
+    let py  = with pkgs.python36Packages; [
+            ]; 
+        sys = with pkgs; [
+            networkmanager
+            acpi
+	    hfsprogs
+    
+        # base
+            fish zsh 
+            vim bvi tmux w3m
+            git curl wget gnused xsel
+            tree less jq mlocate
+            unzip xz
+            sl lolcat figlet
+            bc          # calculator
+            at          # scheduled process execution
+            sdcv        # Dictionary  
+            man-db      # man
+            manpages
+
+        # process managesment
+            lsof psutils htop
+            psmisc      # killall, pstree, ..etc
+            fzf tcpdump
+            ## linuxPackages.perf               # for a kernel package
+            config.boot.kernelPackages.perf   # for a current kernel package, 
+        
+        # security 
+            openssl.dev openssh gnupg
+            sshfs stunnel  
+
+        # network 
+            iptables nettools irssi
+        
+        # X 
+            xorg.xmodmap xorg.xlibsWrapper
+            xlibs.xmodmap xlibs.xbacklight xterm tty-clock xcalib 
+            tk tcl          # tk/tcl 
+    
+        # Icon
+            numix-icon-theme-circle numix-gtk-theme
+
+        # GPU-things
+           freeglut
+
+        # Music/Sound/Video
+            abcde    		# CD ripper 
+            pulseaudioLight     # pulseaudioFull
+            dvdplusrwtools dvdauthor
+            espeak              # festival festival-english festival-us
+            ffmpeg mplayer sox
+	    ffmpeg-full 
+            gnome3.totem vlc    # kde4.dragon kde4.kmix 
+	
+	# Android
+	    android-file-transfer 
+
+        # Virtualization and Containers
+            docker python27Packages.docker_compose
+
+        # Browser 
+            chromium firefoxWrapper
+
+        # Mail 
+            thunderbird
+
+        # PDF
+            kdeApplications.okular mupdf evince     
+
+        # Math
+            sage 
+        # Applications
+            # dropbox 
+            dropbox-cli  
+            xorg.libxshmfence
+            # xfce4-12.thunar-dropbox-plugin
+            # xfce.thunar-dropbox-plugin
+            atom 
+            qrencode
+            vokoscreen
+            maim        ## command-line screenshot
+            gimp
+            youtube-dl
+            gnome3.eog  # image viewer
+            tesseract   # OCR
+            djvu2pdf
+            timidity        # MIDI
+            minecraft       # Game
+
+        ###################
+        ###  Languages  ###
+        ###################
+        # systemd.lib systemd.dev libudev
+            stdenv  binutils.bintools
+            makeWrapper cmake automake autoconf glibc 
+            gdb
+            nodejs ruby jekyll
+
+        # Python
+            python27Full python27Packages.pygments
+            (python36.withPackages (x: with x; [
+                python pip numpy matplotlib toolz pytest ipython jupyter virtualenvwrapper  
+                tk tkinter
+                numpy scipy networkx matplotlib 
+                toolz
+                ]))
+            pypyPackages.virtualenv
+	
+        # Haskell 
+            haskellPackages.cabal-install
+            haskellPackages.ghc
+            (pkgs.haskellPackages.ghcWithPackages(p: with p; [
+                ghc cabal-install hoogle 
+                gnuplot 
+		GLUT
+                ## hip 
+                hakyll 
+                hmatrix algebra ## effect-monad 
+                vector-sized
+                ## megaparsec
+                base58-bytestring secp256k1 vector-sized mwc-random cryptonite ## bitcoin  
+                ]))
+
+        # OCaml
+            ocaml opam 
+            ocamlPackages.utop ocamlPackages.camlp4 
+            ocamlPackages.findlib ocamlPackages.batteries
+
+        # coq
+            coq coqPackages.ssreflect
+
+        # Rust with C dependencies 
+            rustup cargo 
+            binutils gcc gnumake 
+            openssl pkgconfig 
+
+    
+                ]; in py ++ sys;
+
+
+
+        services = {
+            
+        acpid.enable = true;
+        
+        redshift = {
+            enable = true;
+            latitude = "40";
+            longitude = "135";
+        };
+        
+        openssh.enable = true;
+
+        xserver = {
+            enable = true;
+            layout = "us";
+            xkbOptions = "eurosign:e";
+
+            displayManager.slim.enable = true;
+	    displayManager.slim.defaultUser = "ghasshee";
+	    displayManager.slim.autoLogin = true;
             desktopManager.xfce.enable = true;
 #           desktopManager.kde4.enable = true;
-            synaptics           = {
-                enable              = true;
-#               tapButtons          = true;
-                twoFingerScroll     = true;
-                horizontalScroll    = true;
-                vertEdgeScroll      = false;
-                accelFactor         = "0.015";
-                buttonsMap          = [1 3 2];
-                fingersMap          = [1 3 2];
-                additionalOptions   = ''
+       
+            synaptics = {
+                enable = true;
+#               tapButtons = true;
+                twoFingerScroll = true;
+                horizontalScroll = true;
+                vertEdgeScroll = false;
+                accelFactor = "0.015";
+                buttonsMap = [1 3 2];
+                fingersMap = [1 3 2];
+
+                additionalOptions = ''
                     Option "VertScrollDelta" "50"
                     Option "HorizScrollDelta" "-20"
-                ''; };};
-        printing            = {
-            enable              = true; # enable CUPS Printing 
-            drivers             = with pkgs; [ gutenprint hplipWithPlugin cups-bjnp cups-dymo ];};
+                '';
+            };
+        };
+
+        printing = {
+            enable = true; # enable CUPS Printing 
+            drivers = [pkgs.gutenprint pkgs.hplipWithPlugin ];
+        };
+      
+#       multitouch.enable = true;
+#       multitouch.invertScroll = true;
     };
 
     # Shells
-    programs.zsh            = {
-        enable                  = true;
-        promptInit              = "";
-        interactiveShellInit    = ""; };
-    
-#########  User ( Do not forget to set with `passwd` ) 
-    users               = {
-        users               = {};
-        extraUsers          = {
-            ghasshee            = {
-	            isNormalUser        = true;
-	            home                = "/home/ghasshee";
-	            extraGroups         = ["wheel" "networkmanager" "adbusers"];
-      	        shell               = "/run/current-system/sw/bin/zsh";
-                uid                 = 1000;     };};
+    programs.zsh.enable = true;
+    # programs.zsh.promptInit = "";
+    # environment.promptInit = "";
+    # programs.zsh.interactiveShellInit = "";
+    # environment.interactiveShellInit = ""; 
+    # User ( Do not forget to set with `passwd`
+    users.extraUsers.ghasshee = {
+	    isNormalUser    = true;
+	    home            = "/home/ghasshee";
+	    extraGroups     = ["wheel" "networkmanager"];
+      	shell           = "/run/current-system/sw/bin/zsh";
+        uid = 1000;
     };
-    system.stateVersion = "19.03";
+
+    system.stateVersion = "18.09";
+
 }
+
+
 
