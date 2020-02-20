@@ -3,291 +3,138 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, ... }:
-
+let 
+	dev 	    = "/dev/sda"; 
+	dev1	 	= "${dev}1";
+    dev2	 	= "${dev}2";
+	p		    = (import ./packages.nix) pkgs;
+in
+with pkgs; 
 {
-    imports =
-        [ # Include the results of the hardware scan.
-        ./hardware-configuration.nix
-        ];
-
-    hardware = {
-	pulseaudio.enable 	= true;
-        opengl.driSupport32Bit  = true;
-        pulseaudio.support32Bit = true;
-        bluetooth.enable        = true;
-    };
-    sound.enable = true;
-    boot = {
-        kernelPackages = pkgs.linuxPackages_latest;
-        initrd.luks.devices = [
-            {
-                name = "root";
-                device = "/dev/sda2";
-                preLVM = true;
-            }];
-        loader = {
-            grub = {
-                enable = true;
-                device = "/dev/sda";
-                extraConfig = 
-                "GRUB_CMDLINE_LINUX_DEFAULT=\"resume=/dev/sda2\"";
-#               efiSupport = true;
-#               forceInstall = true;
-            };
-#           systemd-boot.enable = true;     # Formerly  gummiboot.enable
-#           efi.canTouchEfiVariables = true;
+    imports                     =   [ ./hardware-configuration.nix ];
+    hardware                    =   {
+        opengl.driSupport32Bit      = true;
+        pulseaudio.enable           = true;
+        bluetooth.enable            = true; 
         };
-        consoleLogLevel = 5;
-        kernelParams = [ "resume=/dev/sda2" ];
-        #blacklistedKernelModules = ["nouveau"];
-        initrd.checkJournalingFS = false;
-    };
-
-    networking = {
-        hostName    = "ghasshee";
-        networkmanager.enable = true;
-        nameservers = [ "8.8.8.8" "8.8.4.4" ];
-        firewall = {
-            allowPing = true;
-#           allowedTCPPorts = [ 8080 ];
-#           allowedUDPPorts = [ ... ];
-#           enable = false;
+    boot                        =   {
+        kernelPackages              = linuxPackages_latest;
+        consoleLogLevel             = 5 ;
+        kernelParams                = ["resume=${dev2}" ];
+        blacklistedKernelModules    = ["nouveau"];
+        initrd                      = {
+            checkJournalingFS   = false;   
+            luks.devices        = [{
+                name                = "root";
+                device              = "${dev2}";
+                preLVM              = true;  }]; };
+        loader                  = {
+            grub                    = {
+                enable                  = true;
+                device                  = dev;
+                extraConfig             = "GRUB_CMDLINE_LINUX_DEFAULT=\"resume=${dev2}\""; };};
         };
-    };
-
-    i18n = {
-        consoleFont = "Lat2-Terminus16";
-        consoleKeyMap = "us";
-        defaultLocale = "en_US.UTF-8";
-        inputMethod = {
-            enabled = "ibus";
-            ibus.engines = with pkgs.ibus-engines; [ anthy m17n ];
-            };
-    };
-    
-    time.timeZone = "Asia/Tokyo";
-    
-    nix.binaryCaches = [http://cache.nixos.org];
-    nixpkgs.config = {
-        allowUnfree = true;
-        allowBroken = true;
-        firefox.icedtea = true;
-    };
-
-    environment.etc."fuse.conf".text = ''
-        user_allow_other
-    '';
-        
-    # List packages installed in system profile. To search by name, run
-    # $ nix-env -qaP | grep wget
-    environment.systemPackages = 
-    let py  = with pkgs.python36Packages; [
-            ]; 
-        sys = with pkgs; [
-            networkmanager
-            acpi
-	    hfsprogs
-    
-        # base
-            fish zsh 
-            vim bvi tmux w3m
-            git curl wget gnused xsel
-            tree less jq mlocate
-            unzip xz
-            sl lolcat figlet
-            bc          # calculator
-            at          # scheduled process execution
-            sdcv        # Dictionary  
-            man-db      # man
-            manpages
-
-        # process managesment
-            lsof psutils htop
-            psmisc      # killall, pstree, ..etc
-            fzf tcpdump
-            ## linuxPackages.perf               # for a kernel package
-            config.boot.kernelPackages.perf   # for a current kernel package, 
-        
-        # security 
-            openssl.dev openssh gnupg
-            sshfs stunnel  
-
-        # network 
-            iptables nettools irssi
-        
-        # X 
-            xorg.xmodmap xorg.xlibsWrapper
-            xlibs.xmodmap xlibs.xbacklight xterm tty-clock xcalib 
-            tk tcl          # tk/tcl 
-    
-        # Icon
-            numix-icon-theme-circle numix-gtk-theme
-
-        # GPU-things
-           freeglut
-
-        # Music/Sound/Video
-            abcde    		# CD ripper 
-            pulseaudioLight     # pulseaudioFull
-            dvdplusrwtools dvdauthor
-            espeak              # festival festival-english festival-us
-            ffmpeg mplayer sox
-	    ffmpeg-full 
-            gnome3.totem vlc    # kde4.dragon kde4.kmix 
-	
-	# Android
-	    android-file-transfer 
-
-        # Virtualization and Containers
-            docker python27Packages.docker_compose
-
-        # Browser 
-            chromium firefoxWrapper
-
-        # Mail 
-            thunderbird
-
-        # PDF
-            kdeApplications.okular mupdf evince     
-
-        # Math
-            sage 
-        # Applications
-            # dropbox 
-            dropbox-cli  
-            xorg.libxshmfence
-            # xfce4-12.thunar-dropbox-plugin
-            # xfce.thunar-dropbox-plugin
-            atom 
-            qrencode
-            vokoscreen
-            maim        ## command-line screenshot
-            gimp
-            youtube-dl
-            gnome3.eog  # image viewer
-            tesseract   # OCR
-            djvu2pdf
-            timidity        # MIDI
-            minecraft       # Game
-
-        ###################
-        ###  Languages  ###
-        ###################
-        # systemd.lib systemd.dev libudev
-            stdenv  binutils.bintools
-            makeWrapper cmake automake autoconf glibc 
-            gdb
-            nodejs ruby jekyll
-
-        # Python
-            python27Full python27Packages.pygments
-            (python36.withPackages (x: with x; [
-                python pip numpy matplotlib toolz pytest ipython jupyter virtualenvwrapper  
-                tk tkinter
-                numpy scipy networkx matplotlib 
-                toolz
-                ]))
-            pypyPackages.virtualenv
-	
-        # Haskell 
-            haskellPackages.cabal-install
-            haskellPackages.ghc
-            (pkgs.haskellPackages.ghcWithPackages(p: with p; [
-                ghc cabal-install hoogle 
-                gnuplot 
-		GLUT
-                ## hip 
-                hakyll 
-                hmatrix algebra ## effect-monad 
-                vector-sized
-                ## megaparsec
-                base58-bytestring secp256k1 vector-sized mwc-random cryptonite ## bitcoin  
-                ]))
-
-        # OCaml
-            ocaml opam 
-            ocamlPackages.utop ocamlPackages.camlp4 
-            ocamlPackages.findlib ocamlPackages.batteries
-
-        # coq
-            coq coqPackages.ssreflect
-
-        # Rust with C dependencies 
-            rustup cargo 
-            binutils gcc gnumake 
-            openssl pkgconfig 
-
-    
-                ]; in py ++ sys;
-
-
-
-        services = {
-            
-        acpid.enable = true;
-        
-        redshift = {
-            enable = true;
-            latitude = "40";
-            longitude = "135";
+    time.timeZone               =   "Asia/Tokyo";
+    networking                  =   {
+        hostName                    = "ghasshee";
+        networkmanager.enable       = true;
+        nameservers             = [ "8.8.8.8" "8.8.4.4" ];
+        firewall                = {
+            enable                  = false;
+            allowPing               = false;
+            allowedTCPPorts         = [ 8080 ];
+            allowedUDPPorts         = [ ]; };
         };
-        
-        openssh.enable = true;
+    i18n                        =   {
+        consoleFont                 = "Lat2-Terminus16";
+        consoleKeyMap               = "us";
+        defaultLocale               = "en_US.UTF-8";
+        inputMethod                 = {
+            enabled                     = "ibus";
+            ibus.engines                = with ibus-engines; [ anthy m17n ]; };
+        };
+    nix.binaryCaches            = [http://cache.nixos.org];
+    nixpkgs.config              = {
+        allowUnfree                 = true;
+        allowBroken                 = true;
+        firefox.icedtea             = true;
+        };
+    environment                 =   {
+        etc."fuse.conf".text = ''user_allow_other'';
+            systemPackages = [
+                zsh vim bvi tmux w3m git curl wget gnused xsel rename tree less rlwrap
+                jq mlocate unzip xz sl lolcat figlet man-db manpages sdcv bc acpi
+                openssl.dev openssh gnupg sshfs stunnel 
+                networkmanager iptables nettools irssi tcpdump
 
-        xserver = {
-            enable = true;
-            layout = "us";
-            xkbOptions = "eurosign:e";
+                at lsof psutils htop fzf psmisc 
+                config.boot.kernelPackages.perf         ## linuxPackages.perf
 
-            displayManager.slim.enable = true;
-	    displayManager.slim.defaultUser = "ghasshee";
-	    displayManager.slim.autoLogin = true;
+                xorg.xlibsWrapper xlibs.xmodmap acpilight xterm tty-clock xcalib tk tcl freeglut
+                numix-icon-theme-circle numix-gtk-theme
+                
+                abcde
+                pulseaudioLight 
+                dvdplusrwtools dvdauthor 
+                espeak ffmpeg-full mplayer sox timidity 
+                gnome3.totem vlc
+
+                chromium firefoxWrapper thunderbird kdeApplications.okular mupdf evince vivaldi
+            ] ++ p;
+        };
+    services            = {
+        acpid.enable            = true;
+        redshift                = {
+            enable                  = true;
+            latitude                = "40";
+            longitude               = "135";    };
+        openssh.enable          = true;
+        xserver                 = {
+            enable                  = true;
+            layout                  = "us";
+            xkbOptions              = "eurosign:e";
+            videoDrivers            = [ "nvidia" ];
+            displayManager.slim     = {
+                enable                  = true;
+                defaultUser             = "ghasshee";
+                autoLogin               = true;     };
             desktopManager.xfce.enable = true;
-#           desktopManager.kde4.enable = true;
-       
-            synaptics = {
-                enable = true;
-#               tapButtons = true;
-                twoFingerScroll = true;
-                horizontalScroll = true;
-                vertEdgeScroll = false;
-                accelFactor = "0.015";
-                buttonsMap = [1 3 2];
-                fingersMap = [1 3 2];
-
-                additionalOptions = ''
+            synaptics               = {
+                enable                  = true;
+                tapButtons              = false;
+                twoFingerScroll         = true;
+                horizontalScroll        = true;
+                vertEdgeScroll          = false;
+                accelFactor             = "0.015";
+                buttonsMap              = [1 3 2];
+                fingersMap              = [1 3 2];
+                additionalOptions       = ''
                     Option "VertScrollDelta" "50"
                     Option "HorizScrollDelta" "-20"
-                '';
-            };
+                ''; };  };
+        printing                = {
+            enable                  = true; # enable CUPS Printing 
+            drivers                 = [ gutenprint hplipWithPlugin cups-bjnp cups-dymo ];};
         };
-
-        printing = {
-            enable = true; # enable CUPS Printing 
-            drivers = [pkgs.gutenprint pkgs.hplipWithPlugin ];
-        };
-      
-#       multitouch.enable = true;
-#       multitouch.invertScroll = true;
-    };
-
     # Shells
-    programs.zsh.enable = true;
-    # programs.zsh.promptInit = "";
-    # environment.promptInit = "";
-    # programs.zsh.interactiveShellInit = "";
-    # environment.interactiveShellInit = ""; 
-    # User ( Do not forget to set with `passwd`
-    users.extraUsers.ghasshee = {
-	    isNormalUser    = true;
-	    home            = "/home/ghasshee";
-	    extraGroups     = ["wheel" "networkmanager"];
-      	shell           = "/run/current-system/sw/bin/zsh";
-        uid = 1000;
-    };
-
-    system.stateVersion = "18.09";
-
+    programs.zsh            = {
+        enable                  = true;
+        promptInit              = "";
+        interactiveShellInit    = ""; 
+        };
+    virtualisation.docker.enable = true;
+#########  User ( Do not forget to set with `passwd` ) 
+    users                   = {
+        users               = {};
+        extraUsers          = {
+            ghasshee            = {
+	            isNormalUser        = true;
+	            home                = "/home/ghasshee";
+	            extraGroups         = ["wheel" "networkmanager" "adbusers" "docker"];
+      	        shell               = "/run/current-system/sw/bin/zsh";
+                uid                 = 1000;     };};
+        };
+    system.stateVersion = "19.03";
 }
 
 

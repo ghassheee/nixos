@@ -7,7 +7,7 @@
         <property name="workspace0" type="empty">
           <property name="color-style" type="int" value="0"/>
           <property name="image-style" type="int" value="3"/>
-          <property name="last-image" type="string" value="/home/ghasshee/.backgrounds/river_valley_mountains-wallpaper-2560x1440.jpg"/>
+          <property name="last-image" type="string" value="/home/ghasshee/.backgrounds/armenia_syunik_khustup_hayk_b-wallpaper-2560x1440.jpg"/>
           <property name="backdrop-cycle-enable" type="bool" value="true"/>
           <property name="backdrop-cycle-period" type="int" value="1"/>
           <property name="backdrop-cycle-timer" type="uint" value="5"/>
@@ -15,19 +15,19 @@
         <property name="workspace1" type="empty">
           <property name="color-style" type="int" value="0"/>
           <property name="image-style" type="int" value="5"/>
-          <property name="last-image" type="string" value="/home/ghasshee/.backgrounds/rainy_morning-wallpaper-2560x1440(1).jpg"/>
+          <property name="last-image" type="string" value="/home/ghasshee/.backgrounds/snowy_mountain_winter_mist-wallpaper-2560x1440.jpg"/>
           <property name="backdrop-cycle-enable" type="bool" value="true"/>
         </property>
         <property name="workspace2" type="empty">
           <property name="color-style" type="int" value="0"/>
           <property name="image-style" type="int" value="5"/>
-          <property name="last-image" type="string" value="/home/ghasshee/.backgrounds/beautiful_mountain_scenery_hdr-wallpaper-2560x1440.jpg"/>
+          <property name="last-image" type="string" value="/home/ghasshee/.backgrounds/dark_valley-wallpaper-2560x1440.jpg"/>
           <property name="backdrop-cycle-enable" type="bool" value="true"/>
         </property>
         <property name="workspace3" type="empty">
           <property name="color-style" type="int" value="0"/>
           <property name="image-style" type="int" value="5"/>
-          <property name="last-image" type="string" value="/home/ghasshee/.backgrounds/rainy_morning-wallpaper-2560x1440.jpg"/>
+          <property name="last-image" type="string" value="/home/ghasshee/.backgrounds/snowy_mountain_peak_above_clouds-wallpaper-2560x1440.jpg"/>
           <property name="backdrop-cycle-enable" type="bool" value="true"/>
         </property>
         <property name="workspace4" type="empty">

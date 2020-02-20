@@ -21,7 +21,6 @@
         <value type="int" value="6"/>
         <value type="int" value="2"/>
         <value type="int" value="22"/>
-        <value type="int" value="19"/>
       </property>
       <property name="mode" type="uint" value="2"/>
     </property>
@@ -36,7 +35,6 @@
         <value type="int" value="10"/>
         <value type="int" value="16"/>
         <value type="int" value="18"/>
-        <value type="int" value="12"/>
         <value type="int" value="11"/>
         <value type="int" value="23"/>
         <value type="int" value="13"/>
@@ -47,7 +45,7 @@
       <property name="autohide-behavior" type="uint" value="1"/>
     </property>
     <property name="panel-3" type="empty">
-      <property name="position" type="string" value="p=12;x=1036;y=1101"/>
+      <property name="position" type="string" value="p=12;x=1296;y=1389"/>
       <property name="plugin-ids" type="array">
         <value type="int" value="21"/>
       </property>
@@ -127,17 +125,11 @@
         <value type="string" value="15439167771.desktop"/>
       </property>
     </property>
-    <property name="plugin-12" type="string" value="launcher">
-      <property name="items" type="array">
-        <value type="string" value="15458237641.desktop"/>
-      </property>
-    </property>
     <property name="plugin-11" type="string" value="launcher">
       <property name="items" type="array">
         <value type="string" value="15501254361.desktop"/>
       </property>
     </property>
-    <property name="plugin-19" type="string" value="power-manager-plugin"/>
     <property name="plugin-23" type="string" value="launcher">
       <property name="items" type="array">
         <value type="string" value="15600829701.desktop"/>
