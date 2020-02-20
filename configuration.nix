@@ -115,8 +115,14 @@ with pkgs;
                 ''; };  };
         printing                = {
             enable                  = true; # enable CUPS Printing 
-            drivers                 = [ gutenprint hplipWithPlugin cups-bjnp cups-dymo ];};
+            drivers                 = [gutenprint cups-bjnp cups-dymo];};
+	cron 			= {
+	    enable 		    = true;
+	    systemCronJobs      = [ 
+		"* * * * * ghasshee . /etc/profile; espeak 'Another minute has passed in your life'"
+				];};
         };
+
     # Shells
     programs.zsh            = {
         enable                  = true;
