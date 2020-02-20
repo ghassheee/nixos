@@ -48,4 +48,4 @@ let
         coq coqPackages_8_6.ssreflect   ## Coq
         rustup cargo                    ## RUST 
 ];
-in sys ++ hs ++ py ++ ml 
+in sys ++ py ++ ml 

@@ -10,7 +10,7 @@
       <property name="position" type="string" value="p=6;x=0;y=0"/>
       <property name="length" type="uint" value="100"/>
       <property name="position-locked" type="bool" value="true"/>
-      <property name="size" type="uint" value="100"/>
+      <property name="size" type="uint" value="106"/>
       <property name="plugin-ids" type="array">
         <value type="int" value="17"/>
         <value type="int" value="1"/>
@@ -36,16 +36,16 @@
         <value type="int" value="16"/>
         <value type="int" value="18"/>
         <value type="int" value="11"/>
-        <value type="int" value="23"/>
         <value type="int" value="13"/>
+        <value type="int" value="12"/>
         <value type="int" value="14"/>
       </property>
       <property name="mode" type="uint" value="1"/>
-      <property name="size" type="uint" value="60"/>
+      <property name="size" type="uint" value="50"/>
       <property name="autohide-behavior" type="uint" value="1"/>
     </property>
     <property name="panel-3" type="empty">
-      <property name="position" type="string" value="p=12;x=1296;y=1389"/>
+      <property name="position" type="string" value="p=12;x=1036;y=1101"/>
       <property name="plugin-ids" type="array">
         <value type="int" value="21"/>
       </property>
@@ -70,11 +70,11 @@
     <property name="plugin-6" type="string" value="systray">
       <property name="names-visible" type="array">
         <value type="string" value="thunar"/>
+        <value type="string" value="vlc"/>
         <value type="string" value="networkmanager applet"/>
         <value type="string" value="ibus panel"/>
         <value type="string" value="ibus-ui-gtk3"/>
         <value type="string" value="vokoscreen"/>
-        <value type="string" value="dropbox"/>
         <value type="string" value="xfce4-power-manager"/>
         <value type="string" value="skypeforlinux"/>
       </property>
@@ -116,7 +116,7 @@
       <property name="rows" type="uint" value="1"/>
     </property>
     <property name="plugin-22" type="string" value="mixer">
-      <property name="sound-card" type="string" value="HDAIntelPCHAlsamixer"/>
+      <property name="sound-card" type="string" value="HDAudioGenericAlsamixer"/>
       <property name="track" type="string" value="Master"/>
       <property name="command" type="string" value="xfce4-mixer"/>
     </property>
@@ -130,9 +130,8 @@
         <value type="string" value="15501254361.desktop"/>
       </property>
     </property>
-    <property name="plugin-23" type="string" value="launcher">
+    <property name="plugin-12" type="string" value="launcher">
       <property name="items" type="array">
-        <value type="string" value="15600829701.desktop"/>
       </property>
     </property>
   </property>

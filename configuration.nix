@@ -70,7 +70,8 @@ with pkgs;
                 at lsof psutils htop fzf psmisc 
                 config.boot.kernelPackages.perf         ## linuxPackages.perf
 
-                xorg.xlibsWrapper xlibs.xmodmap acpilight xterm tty-clock xcalib tk tcl freeglut
+                xorg.xlibsWrapper xlibs.xmodmap  xterm tty-clock xcalib tk tcl freeglut
+		##acpilight
                 numix-icon-theme-circle numix-gtk-theme
                 
                 abcde
