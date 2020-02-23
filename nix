@@ -11,6 +11,7 @@ cp -r ~/.config/xfce4   ~/ghasshee/nixos/.config
 backup(){
 cp /etc/nixos/configuration.nix ~/ghasshee/nixos
 cp /etc/nixos/packages.nix      ~/ghasshee/nixos
+cp /etc/nixos/cron.nix      ~/ghasshee/nixos
 }
 
 install_config(){
@@ -22,6 +23,10 @@ cp -r $HOME/ghasshee/nixos/.config/ ~/.config
 }
 
 install(){
+if [[ -d /etc/nixos/cron.nix ]] 
+then
+    sudo mv /etc/nixos/cron.nix /etc/nixos/cron-old.nix
+fi
 if [[ -d /etc/nixos/configuration.nix ]] 
 then
     sudo mv /etc/nixos/configuration.nix /etc/nixos/configuration-old.nix
@@ -30,6 +35,7 @@ if [[ -d /etc/nixos/packages.nix ]]
 then
     sudo mv /etc/nixos/packages.nix /etc/nixos/packages-old.nix
 fi
+sudo cp $HOME/ghasshee/nixos/cron.nix /etc/nixos/cron.nix 
 sudo cp $HOME/ghasshee/nixos/configuration.nix /etc/nixos/configuration.nix 
 sudo cp $HOME/ghasshee/nixos/packages.nix /etc/nixos/packages.nix 
 }

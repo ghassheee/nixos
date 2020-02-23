@@ -8,6 +8,7 @@ let
 	dev1	 	= "${dev}1";
     dev2	 	= "${dev}2";
 	p		    = (import ./packages.nix) pkgs;
+    cron        = (import ./cron.nix);
 in
 with pkgs; 
 {
@@ -64,7 +65,8 @@ with pkgs;
             systemPackages = [
                 zsh vim bvi tmux w3m git curl wget gnused xsel rename tree less rlwrap
                 jq mlocate unzip xz sl lolcat figlet man-db manpages sdcv bc acpi
-                openssl.dev openssh gnupg sshfs stunnel 
+                hfsprogs ntfs3g 
+		openssl.dev openssh gnupg sshfs stunnel 
                 networkmanager iptables nettools irssi tcpdump
 
                 at lsof psutils htop fzf psmisc 
@@ -75,7 +77,7 @@ with pkgs;
                 numix-icon-theme-circle numix-gtk-theme
                 
                 abcde
-                pulseaudioLight 
+                pulseaudio 
                 dvdplusrwtools dvdauthor 
                 espeak ffmpeg-full mplayer sox timidity 
                 gnome3.totem vlc
@@ -118,10 +120,10 @@ with pkgs;
             drivers                 = [gutenprint cups-bjnp cups-dymo];};
 	cron 			= {
 	    enable 		    = true;
-	    systemCronJobs      = [ 
-		"* * * * * ghasshee . /etc/profile; espeak 'Another minute has passed in your life'"
-				];};
+	    #systemCronJobs      = [ "* * * * * ghasshee . /etc/profile; espeak 'Another minute has passed in your life'"];
+        systemCronJobs      = cron;
         };
+    };
 
     # Shells
     programs.zsh            = {
