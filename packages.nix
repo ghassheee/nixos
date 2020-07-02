@@ -24,8 +24,13 @@ let
             ])) 
         ];
     ml              = with ocamlPackages; [
-        ocaml opam utop camlp4 findlib batteries 
+        ocaml opam  
         ]; 
+    eth = [
+	parity
+	go-ethereum
+	];
+	
     sys             = [
                  
    # Applications
@@ -36,16 +41,16 @@ let
         gnome3.eog      # image viewer
         tesseract       # OCR
         timidity        # MIDI
-        minecraft       # Game
         ltris
         texlive.combined.scheme-full
                 
-   # Languages  
+   # Languages
         stdenv  binutils.bintools makeWrapper cmake automake autoconf glibc gdb 
-        binutils gcc gnumake openssl pkgconfig 
+        binutils llvm llvmPackages.libclang gcc gnumake openssl pkgconfig 
+	m4 ncurses
         nodejs ruby jekyll              ## Ruby / Nodejs
         idris vimPlugins.idris-vim      ## Idris
         coq coqPackages_8_6.ssreflect   ## Coq
-        rustup cargo                    ## RUST 
+        rustup cargo carnix                    ## RUST 
 ];
-in sys ++ py ++ ml 
+in sys ++ py ++ ml ++ eth 

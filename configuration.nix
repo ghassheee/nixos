@@ -9,11 +9,13 @@ let
     dev2	 	= "${dev}2";
 	p		    = (import ./packages.nix) pkgs;
     cron        = (import ./cron.nix);
+	LIBCLANG_PATH = "${pkgs.llvmPackages.libclang}/lib";
 in
 with pkgs; 
 {
     imports                     =   [ ./hardware-configuration.nix ];
     hardware                    =   {
+	#bumblebee.enable 	    = true;	
         opengl.driSupport32Bit      = true;
         pulseaudio.enable           = true;
         bluetooth.enable            = true; 
@@ -82,28 +84,29 @@ with pkgs;
                 espeak ffmpeg-full mplayer sox timidity 
                 gnome3.totem vlc
 
-                chromium firefoxWrapper thunderbird kdeApplications.okular mupdf evince vivaldi
+                firefoxWrapper thunderbird kdeApplications.okular mupdf evince vivaldi
             ] ++ p;
         };
     services            = {
         acpid.enable            = true;
         redshift                = {
             enable                  = true;
-            latitude                = "40";
-            longitude               = "135";    };
+            latitude                = "40.0";
+            longitude               = "135.0";    };
         openssh.enable          = true;
         xserver                 = {
             enable                  = true;
             layout                  = "us";
             xkbOptions              = "eurosign:e";
-            videoDrivers            = [ "nvidia" ];
-            displayManager.slim     = {
-                enable                  = true;
-                defaultUser             = "ghasshee";
-                autoLogin               = true;     };
+            videoDrivers            = ["nvidia"];
+           # displayManager.lightdm  = {
+           #     enable                  = true;
+           #     #user             = "ghasshee";
+           #     #autoLogin               = true;     
+           #     };
             desktopManager.xfce.enable = true;
             synaptics               = {
-                enable                  = true;
+                enable                  = false;
                 tapButtons              = false;
                 twoFingerScroll         = true;
                 horizontalScroll        = true;

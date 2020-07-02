@@ -18,17 +18,17 @@
 
 # FRENCH NHK
 "0  5 * * 1-5 	ghasshee . /etc/profile; killall firefox"
-"30 7 * * 1-5 	ghasshee . /etc/profile; sleep 32; ~/.bin/nhk-radio"
-"30 7 * * 1-3	ghasshee . /etc/profile; sleep 30; ffmpeg -y -f pulse -i $AUDIO_OUT -t 905 ~/nhk/french/french_basical_$(date -I|sed s/-//g).ogg "
-"30 7 * * 4-5	ghasshee . /etc/profile; sleep 30; ffmpeg -y -f pulse -i $AUDIO_OUT -t 905 ~/nhk/french/french_applied_$(date -I|sed s/-//g).ogg "
-"0 11 * * 1-5 	ghasshee . /etc/profile; sleep 32; ~/.bin/nhk-radio"
-"0 11 * * 1-3 	ghasshee . /etc/profile; sleep 35; ffmpeg -y -f pulse -i $AUDIO_OUT -t 905 ~/nhk/french/french_basical_RE_$(date -I|sed s/-//g).ogg"
-"0 11 * * 4-5   ghasshee . /etc/profile; sleep 35; ffmpeg -y -f pulse -i $AUDIO_OUT -t 905 ~/nhk/french/french_applied_RE_$(date -I|sed s/-//g).ogg"
+"30 7 * * 1-5 	ghasshee . /etc/profile; sleep 40; ~/.bin/nhk-radio"
+"30 7 * * 1-3	ghasshee . /etc/profile; sleep 40; ffmpeg -y -f pulse -i $AUDIO_OUT -t 905 ~/nhk/french/french_basical_$(date -I|sed s/-//g).ogg "
+"30 7 * * 4-5	ghasshee . /etc/profile; sleep 40; ffmpeg -y -f pulse -i $AUDIO_OUT -t 905 ~/nhk/french/french_applied_$(date -I|sed s/-//g).ogg "
+"0 11 * * 1-5 	ghasshee . /etc/profile; sleep 40; ~/.bin/nhk-radio"
+"0 11 * * 1-3 	ghasshee . /etc/profile; sleep 40; ffmpeg -y -f pulse -i $AUDIO_OUT -t 905 ~/nhk/french/french_basical_RE_$(date -I|sed s/-//g).ogg"
+"0 11 * * 4-5   ghasshee . /etc/profile; sleep 40; ffmpeg -y -f pulse -i $AUDIO_OUT -t 905 ~/nhk/french/french_applied_RE_$(date -I|sed s/-//g).ogg"
 
 # ENGLISH NHK
-"45 6 * * 1-5 	ghasshee . /etc/profile; sleep 30; ~/.bin/nhk-radio"
-"25 12 * * 1-5 	ghasshee . /etc/profile; sleep 30; ~/.bin/nhk-radio"
-"25 12 * * 1-5	ghasshee . /etc/profile; sleep 30; ffmpeg -y -f pulse -i $AUDIO_OUT -t 905 ~/nhk/english/english_onishi_$(date -I|sed s/-//g).ogg "
+"45 6 * * 1-5 	ghasshee . /etc/profile; sleep 40; ~/.bin/nhk-radio"
+"25 12 * * 1-5 	ghasshee . /etc/profile; sleep 40; ~/.bin/nhk-radio"
+"25 12 * * 1-5	ghasshee . /etc/profile; sleep 40; ffmpeg -y -f pulse -i $AUDIO_OUT -t 905 ~/nhk/english/english_onishi_$(date -I|sed s/-//g).ogg "
 
 /*
 # SLEEP TIMER
